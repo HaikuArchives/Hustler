@@ -1,0 +1,116 @@
+<HTML>
+
+<!-- 678901234567890123456789012345678901234567890123456789012345678901234 -->
+
+<HEAD>
+<TITLE>Hustler</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<TABLE BORDER="0" CELLPADDING="8" CELLSPACING="0" WIDTH="535"> 
+<TR> 
+
+<TD VALIGN="TOP" WIDTH="100">
+&nbsp; 
+</TD> 
+
+<TD VALIGN="TOP"> 
+
+<I><FONT COLOR="#FF0000" SIZE="+3">Hustler</FONT></I>
+
+<P>Version 2.2<BR> 
+Released on Tuesday, 28 March 2000
+
+<P>Created by Matthijs Hollemans<BR>
+<A HREF="mailto:matthijs@weirdexperiments.com">matthijs@weirdexperiments.com</A><BR>
+<A HREF="http://www.weirdexperiments.com">http://www.weirdexperiments.com</A>
+
+<P><I><FONT COLOR="#FF0000" SIZE="+1">What is it</FONT></I><BR>
+Hustler is a simple audio player for BeOS R4.5 or higher that runs inside 
+the Deskbar. It uses add-ons to do the actual playing, so what kinds of audio
+are supported depends on the add-ons that you have installed. The
+standard distribution comes with a CDDA player add-on and an experimental
+SoundPlay remote control add-on.
+
+<P><I><FONT COLOR="#FF0000" SIZE="+1">How to install it</FONT></I><BR>
+Double-click the Installer icon to launch the installation program. The
+Installer will automatically put Hustler in the
+<FONT COLOR="#885522"><CODE>"/boot/home/config/bin/"</CODE></FONT> folder
+and the add-ons in the
+<FONT COLOR="#885522"><CODE>"/boot/home/config/add-ons/Hustler/"</CODE></FONT> 
+folder. If you wish, the Installer will also modify your boot script to 
+launch Hustler every time you start your computer.
+
+<P><I><FONT COLOR="#FF0000" SIZE="+1">How to get rid of it</FONT></I><BR>
+Double-click the Uninstaller icon to launch the uninstallation program. The
+Uninstaller will automatically remove Hustler and its add-ons from your 
+system and your boot script.
+
+<P><I><FONT COLOR="#FF0000" SIZE="+1">How to write add-ons</FONT></I><BR>
+If you're a developer who wishes to create a add-on for Hustler (in which
+case you probably have way too much spare time ;-), you may want to read the
+<A HREF="Source/API Documentation.html">Hustler add-on API documentation</A>.
+
+<P><I><FONT COLOR="#FF0000" SIZE="+1">Known problems</FONT></I><BR>
+Because of problems with the CD driver that ships with the BeOS, I have not 
+been able to implement some features in the CDDA add-on, such as stopping a 
+CD or skipping through tracks. 
+
+<P>It may take a few seconds for the CDDA add-on to recognize a CD that 
+contains a data track if you have enabled automatic disk mounting in the BeOS
+Disk Mount Settings menu.
+
+<P>The SoundPlay remote control add-on is very limited, and may cause
+SoundPlay to hang from time to time.
+
+<P><I><FONT COLOR="#FF0000" SIZE="+1">Legal stuff</FONT></I><BR>
+Hustler is public domain, so you may do anything you like with it.
+No warranties expressed or implied. I am not responsible for whatever may 
+happen to whomever, whenever. 
+
+<P>The CDDA add-on contains software components developed by Peter Urbanec
+and Be, Inc. The Installer and Uninstaller are based on a script originally 
+written by Tyler Riti. Thanks guys!
+
+<P><I><FONT COLOR="#FF0000" SIZE="+1">History</FONT></I><BR>
+
+Version 1.0 (Saturday, 20 March 1999) 
+<UL> 
+<LI>First version. 
+</UL> 
+
+Version 2.0 (Saturday, 21 August 1999)
+<UL>
+<LI>Hustler is no longer limited to just playing CDs; it now uses add-ons to
+deal with an unlimited variety of players.
+<LI>Added the "volume" and "panning" menu items.
+<LI>On start-up, Hustler automatically activates the player that you selected
+most recently.
+</UL>
+
+Version 2.1 (Saturday, 25 September 1999)
+<UL>
+<LI>Fixed an error in the makefiles of the add-ons that prevented them from
+compiling correctly under BeOS R4.5.2.
+<LI>The Installer script now correctly cleans up when some error occurs.
+<LI>Hustler doesn't hang anymore if something goes wrong with the SoundPlay
+remote control add-on.
+</UL>
+
+Version 2.2 (Tuesday, 28 March 2000)
+<UL>
+<LI>New release for BeOS R5. Older versions of Hustler came with source
+code only, which was automatically compiled during installation. However,
+because of header file changes between R5 and older versions of the BeOS, 
+and because the free version of BeOS R5 doesn't necessarily include 
+development tools, Hustler 2.2 is already compiled. This means that it
+only runs on the Intel platform, since I don't have a PowerPC machine.
+</UL>
+
+</TD> 
+</TR> 
+</TABLE> 
+
+</BODY>
+</HTML>

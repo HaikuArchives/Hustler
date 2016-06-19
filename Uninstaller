@@ -1,0 +1,67 @@
+#!/bin/sh
+
+# ============================================================================
+
+INSTALLDIR="/boot/home/config/bin"
+APPNAME="Hustler"
+APPVERSION="2.2"
+
+ADDONDIR="/boot/home/config/add-ons/Hustler"
+
+BOOTSCRIPTDIR="/boot/home/config/boot"
+STARTKEYWORD="# START Hustler -- DO NOT ALTER THIS LINE"
+ENDKEYWORD="# END Hustler -- DO NOT ALTER THIS LINE"
+
+# ============================================================================
+
+RESULT=$(alert --info "$APPNAME $APPVERSION Uninstaller
+
+This uninstaller will automatically remove $APPNAME and all its add-ons from \
+your system. 
+
+Do you wish to proceed with this operation?" "No" "Yes")
+
+if [ $RESULT = "No" ] ; then
+	exit
+fi
+
+# ============================================================================
+
+DESTINATION=$(find $INSTALLDIR -name $APPNAME)
+
+if [ $DESTINATION ] ; then
+	rm -rf "$INSTALLDIR/$APPNAME"
+fi
+
+# ============================================================================
+
+rm -rf "$ADDONDIR"
+
+# ============================================================================
+
+cd $BOOTSCRIPTDIR
+	
+if [ -e UserBootscript ] ; then
+
+	while (grep -x -q "$STARTKEYWORD" UserBootscript) do
+		if (csplit --quiet UserBootscript "/$STARTKEYWORD/" "%$ENDKEYWORD%+1") ; then
+			cat xx00 xx01 >UserBootscript
+			rm -rf xx00
+			rm -rf xx01
+		else
+			alert --stop "There was an unexpected error in removing $APPNAME \
+from your UserBootscript.
+
+The uninstaller will now quit. You may need to remove $APPNAME from your \
+UserBootscript by hand." &
+			exit
+		fi
+	done
+fi
+
+# ============================================================================
+
+alert --info "Uninstallation complete. $APPNAME has been successfully \
+removed from your system."
+
+# ============================================================================

@@ -1,0 +1,179 @@
+<HTML>
+
+<!-- 678901234567890123456789012345678901234567890123456789012345678901234 -->
+
+<HEAD>
+<TITLE>Hustler Add-On API Documentation</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<TABLE BORDER="0" CELLPADDING="8" CELLSPACING="0" WIDTH="535"> 
+<TR> 
+
+<TD VALIGN="TOP" WIDTH="100"> 
+&nbsp;
+</TD> 
+
+<TD VALIGN="TOP"> 
+
+<I><FONT COLOR="#FF0000" SIZE="+3">Hustler Add-On API Documentation</FONT></I>
+
+<P><B><FONT SIZE="+1">Introduction</FONT></B><BR>
+This document describes how to write add-ons for version 1 of the Hustler
+add-on API. Fortunately, writing Hustler add-ons is pretty easy. You have
+to implement two simple classes, derived from 
+<FONT COLOR="#885522"><CODE>HustlerAddOn</CODE></FONT> and 
+<FONT COLOR="#885522"><CODE>HustlerPlayer</CODE></FONT>, and 
+one global function, called 
+<FONT COLOR="#885522"><CODE>InstantiateAddOn</CODE></FONT>.
+
+<P>You may want to take a quick peek at the
+<A HREF="Hustler/HustlerAddOn.h">HustlerAddOn.h</A> and 
+<A HREF="Hustler/HustlerPlayer.h">HustlerPlayer.h</A> header files 
+before you continue. After reading this document you may also want to look 
+at the source code of the add-ons that come with the distribution.
+
+<P>Remember that all add-ons must be installed in the
+<FONT COLOR="#885522"><CODE>"/boot/home/config/add-ons/Hustler/"</CODE></FONT> 
+folder. Whenever you copy an add-on to this directory, Hustler will 
+automatically load it, so there is no need to restart Hustler or the Deskbar.
+
+<P><B><FONT SIZE="+1">The InstantiateAddOn function</FONT></B><BR>
+After loading your add-on, Hustler first calls the 
+<FONT COLOR="#885522"><CODE>InstantiateAddOn</CODE></FONT> function, which
+should create and return an instance of the class that you derived from 
+<FONT COLOR="#885522"><CODE>HustlerAddOn</CODE></FONT>. From then on, Hustler
+will use this object to interact with the add-on.
+
+<P>For example:<FONT COLOR="#885522"><PRE>    HustlerAddOn* 
+    InstantiateHustlerAddOn()
+    {
+        return new MyAddOn();
+    }</PRE></FONT>
+
+<P>The <FONT COLOR="#885522"><CODE>HustlerAddOn.h</CODE></FONT> header file
+already exports the 
+<FONT COLOR="#885522"><CODE>InstantiateAddOn</CODE></FONT> function for you,
+so you don't have to worry about that.
+
+<P><B><FONT SIZE="+1">The HustlerAddOn class</FONT></B><BR>
+You need to create a class that implements the 
+<FONT COLOR="#885522"><CODE>GetInfo()</CODE></FONT>,
+<FONT COLOR="#885522"><CODE>GetPlayerName()</CODE></FONT>, and
+<FONT COLOR="#885522"><CODE>GetPlayer()</CODE></FONT> methods from the 
+abstract <FONT COLOR="#885522"><CODE>HustlerAddOn</CODE></FONT> class.
+You don't need to override the 
+<FONT COLOR="#885522"><CODE>GetVersion()</CODE></FONT> method, because it is
+already implemented in 
+<FONT COLOR="#885522"><CODE>HustlerAddOn.h</CODE></FONT>, where it always 
+returns <FONT COLOR="#885522"><CODE>1</CODE></FONT>.
+
+<P>The <FONT COLOR="#885522"><CODE>GetInfo()</CODE></FONT> method must return
+a string with information about this add-on; what it does, which version it 
+is, who wrote it, and so on. This information will be displayed inside 
+Hustler's about box.
+
+<P><B>Creating players</B><BR>
+Add-ons can create one or more players. The CDDA add-on, for example, 
+scans the <FONT COLOR="#885522"><CODE>"/dev"</CODE></FONT> directory
+hierarchy for installed CD players, and creates a 
+<FONT COLOR="#885522"><CODE>CddaPlayer</CODE></FONT> object (which derives
+from <FONT COLOR="#885522"><CODE>HustlerPlayer</CODE></FONT>) for each CD
+player it finds. 
+
+<P>Players are identified by their names. This means that no two players may
+have the same name, not even if they are created by different add-ons.
+
+<P>Each time the user clicks a mouse button on Hustler's view, Hustler calls
+the <FONT COLOR="#885522"><CODE>GetPlayerName()</CODE></FONT> methods of all
+loaded add-ons to ask for the names of the players that they can create. This
+method is called repeatedly with an ever increasing index until it returns 
+<FONT COLOR="#885522"><CODE>NAME_NO_MORE_NAMES</CODE></FONT>. For valid 
+indexes, <FONT COLOR="#885522"><CODE>GetPlayerName()</CODE></FONT> will 
+normally return <FONT COLOR="#885522"><CODE>NAME_OK</CODE></FONT>, but if a 
+player is (temporarily) not available (for whatever reason), it must return
+<FONT COLOR="#885522"><CODE>NAME_NOT_AVAILABLE</CODE></FONT> instead, so 
+Hustler can disable its entry in the Player menu.
+
+<P>For example:<FONT COLOR="#885522"><PRE>    int32
+    MyAddOn::GetPlayerName(int32 index, char* &name)
+    {
+        if (index &lt; number of possible players)
+        {
+            name = name of player at index;
+            if (player is available)
+            {
+                return NAME_OK;
+            }
+            else
+            {
+                return NAME_NOT_AVAILABLE;
+            }
+        }
+        return NAME_NO_MORE_NAMES;
+    }</PRE></FONT>
+
+<P>Then, when the user selects a new player from the Player menu, Hustler
+calls the <FONT COLOR="#885522"><CODE>GetPlayer()</CODE></FONT> method of 
+that player's add-on. After determining that the name it was given is (still)
+valid, this method should create the corresponding player object and return 
+it.
+
+<P>For example:<FONT COLOR="#885522"><PRE>    HustlerPlayer* 
+    MyAddOn::GetPlayer(const char* name)
+    {
+        for (all possible players)
+        {
+            if (name is found)
+            {
+                return new MyPlayer(name);
+            }
+        }
+        return 0;
+    }</PRE></FONT>
+
+<P><B><FONT SIZE="+1">The HustlerPlayer class</FONT></B><BR>
+The <FONT COLOR="#885522"><CODE>HustlerPlayer</CODE></FONT> class is larger
+than <FONT COLOR="#885522"><CODE>HustlerAddOn</CODE></FONT>, but very 
+straightforward nonetheless. It contains several methods that perform actions,
+such as <FONT COLOR="#885522"><CODE>Play()</CODE></FONT> and 
+<FONT COLOR="#885522"><CODE>Pause()</CODE></FONT>, and a set of corresponding
+functions that determine whether these actions can actually be performed, 
+such as <FONT COLOR="#885522"><CODE>CanPlay()</CODE></FONT> and 
+<FONT COLOR="#885522"><CODE>CanPause()</CODE></FONT>. (For example, if the
+player is paused, <FONT COLOR="#885522"><CODE>CanPause()</CODE></FONT> should
+return <FONT COLOR="#885522"><CODE>false</CODE></FONT>, because the player is
+already in that state.)
+
+<P>You will find elaborate descriptions for these methods in their header 
+files, but two are worth mentioning here: 
+<FONT COLOR="#885522"><CODE>GetState()</CODE></FONT> and
+<FONT COLOR="#885522"><CODE>GetPlaylist()</CODE></FONT>.
+
+<P>The <FONT COLOR="#885522"><CODE>GetState()</CODE></FONT> method should
+return the current state of the player. Hustler can deal with four different
+states: <FONT COLOR="#885522"><CODE>STATE_NO_TRACKS</CODE></FONT>, 
+<FONT COLOR="#885522"><CODE>STATE_PLAYING</CODE></FONT>,
+<FONT COLOR="#885522"><CODE>STATE_PAUSED</CODE></FONT>,
+and <FONT COLOR="#885522"><CODE>STATE_STOPPED</CODE></FONT>. The last three 
+are too obvious to mention; 
+<FONT COLOR="#885522"><CODE>STATE_NO_TRACKS</CODE></FONT> means that no 
+tracks are available (for example because no audio CD has been loaded).
+
+<P><FONT COLOR="#885522"><CODE>GetPlaylist()</CODE></FONT> returns a pointer
+to a <FONT COLOR="#885522"><CODE>BList</CODE></FONT> object that stores 
+pointers to the names of the tracks. I suggest that you check out the Support 
+Kit chapter of the Be Book for more information on 
+<A HREF="/boot/beos/documentation/Be Book/The Support Kit/List.html">BList</A>.
+
+<P><B><FONT SIZE="+1">The end</FONT></B><BR>
+Well, that's it. Have fun writing those add-ons! If you have any questions 
+you can always <A HREF="mailto:matthijs@weirdexperiments.com">email me</A>.
+
+</TD> 
+</TR> 
+</TABLE> 
+
+</BODY>
+</HTML>

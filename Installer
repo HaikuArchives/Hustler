@@ -1,0 +1,107 @@
+#!/bin/sh
+
+# ============================================================================
+
+INSTALLDIR="/boot/home/config/bin"
+APPNAME="Hustler"
+APPVERSION="2.2"
+
+ADDONDIR="/boot/home/config/add-ons/Hustler"
+
+BOOTSCRIPTDIR="/boot/home/config/boot"
+STARTKEYWORD="# START Hustler -- DO NOT ALTER THIS LINE"
+ENDKEYWORD="# END Hustler -- DO NOT ALTER THIS LINE"
+
+# ============================================================================
+
+RESULT=$(alert --info "$APPNAME $APPVERSION Installer
+
+Thank you for trying out $APPNAME. This installer will automatically \
+install and configure $APPNAME for you.
+
+Do you wish to proceed with this operation?" "No" "Yes")
+
+if [ $RESULT = "No" ] ; then
+	exit
+fi
+
+# ============================================================================
+
+DESTINATION=$(find $INSTALLDIR -name $APPNAME)
+
+if [ $DESTINATION ] ; then
+	RESULT=$(alert --warning "A version of $APPNAME is already installed.
+Do you wish to replace it?" "No" "Yes")
+	if [ $RESULT = "No" ] ; then
+		alert --info "Installation halted. No changes have been made to your \
+system."
+		exit
+	fi
+fi
+
+# ============================================================================
+
+TOMEDIR=$(dirname "$0")
+cp -f "$TOMEDIR/Binaries/Hustler" $INSTALLDIR
+mimeset -f "$INSTALLDIR/$APPNAME"
+
+if [ ! -e $ADDONDIR ] ; then
+	mkdir $ADDONDIR
+fi
+
+ADDONNAME1="CddaAddOn"
+cp -f "$TOMEDIR/Binaries/$ADDONNAME1" $ADDONDIR
+mimeset -f "$ADDONDIR/$ADDONNAME1"
+
+ADDONNAME2="SoundPlayAddOn"
+cp -f "$TOMEDIR/Binaries/$ADDONNAME2" $ADDONDIR
+mimeset -f "$ADDONDIR/$ADDONNAME2"
+
+# ============================================================================
+
+RESULT=$(alert --info "Would you like to have $APPNAME configured to \
+automatically start up ?
+
+(This will modify your UserBootscript.)" "No" "Yes")
+
+if [ $RESULT = "Yes" ] ; then
+	cd $BOOTSCRIPTDIR
+	
+	if [ ! -e UserBootscript ] ; then
+		echo '#!/bin/sh' >UserBootscript
+	fi
+	RESULT=$(grep -x "$STARTKEYWORD" UserBootscript)
+	if [ ! $RESULT ] ; then
+		cat >>UserBootscript <<EOF
+
+$STARTKEYWORD
+if [ -e $INSTALLDIR/$APPNAME ] ; then
+	$INSTALLDIR/$APPNAME &
+fi
+$ENDKEYWORD
+EOF
+	fi
+fi
+
+# ============================================================================
+	
+RESULT=$(alert --info "Would you like $APPNAME to be run right now?" \
+"No" "Yes")
+
+if [ $RESULT = "Yes" ] ; then
+	$INSTALLDIR/$APPNAME &
+fi
+
+cd $TOMEDIR
+cd ../
+
+# ============================================================================
+
+RESULT=$(alert --info "Installation complete. Would you like to view the \
+documentation for $APPNAME?" "No" "Yes")
+
+if [ $RESULT = "Yes" ] ; then
+	/system/Tracker "$TOMEDIR"/Documentation.html &
+fi
+
+# ============================================================================
