@@ -28,6 +28,8 @@
 #include <PopUpMenu.h>
 #include <String.h>
 
+#include <private/interface/AboutWindow.h>
+
 #include <stdio.h>        // sprintf()
 #include <string.h>
 
@@ -740,7 +742,9 @@ HustlerView::MessageReceived(BMessage* message)
 				}
 			}
 									
-			(new BAlert("About Hustler", text.String(), "OK"))->Go(0);
+			BAboutWindow* about = new BAboutWindow(B_TRANSLATE("Hustler"), APP_SIGNATURE);
+	        about->AddDescription(text.String());
+            about->Show();
 
 			break;
 		}

@@ -2,7 +2,7 @@
 // Implementation System Includes
 // ***************************************************************************
 
-#include <be/be_apps/Deskbar/Deskbar.h>
+#include <Deskbar.h>
 
 // ***************************************************************************
 // Implementation Project Includes
